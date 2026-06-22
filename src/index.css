@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-brand: #3d1705;
+  --color-brand-soft: #fdecb1;
+
+  /* In-between palette shades used throughout the UI. Tailwind only ships
+     50/100…900/950, so utilities like `text-stone-550` previously matched
+     nothing and rendered no color. Defining them here makes every
+     bg-/text-/border-/divide- variant (and /opacity modifiers) resolve. */
+  --color-stone-150: #eeedeb;
+  --color-stone-205: #e3e1df;
+  --color-stone-350: #bfbab6;
+  --color-stone-450: #908a84;
+  --color-stone-550: #68625c;
+  --color-stone-850: #221f1e;
+  --color-slate-550: #566077;
+  --color-slate-850: #172032;
+  --color-amber-450: #f8af17;
+  --color-amber-850: #853b0f;
+  --color-emerald-850: #065741;
+  --color-indigo-850: #342f92;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #e7e4dd;
+  color: #3f3a34;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom interactive input styling to mirror the responsive mock */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #3d1705;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #3d1705;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Hide webkit scrollbars for a clean look inside small logs, with simple fallback */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Adaptive Dark Mode overrides */
+.dark {
+  --color-brand: #fdecb1;
+  --color-brand-soft: #3d1705;
+}
+
+html.dark body {
+  background-color: #121110 !important;
+  color: #eeebe6 !important;
+}
+
+/* Base high fidelity card overrides for dark mode */
+.dark .bg-white {
+  background-color: #1c1a18 !important;
+}
+.dark .bg-\[\#fbfbfa\] {
+  background-color: #1c1a18 !important;
+}
+.dark .text-slate-800,
+.dark .text-slate-850,
+.dark .text-stone-850,
+.dark .text-stone-800 {
+  color: #eceae6 !important;
+}
+.dark .text-stone-400 {
+  color: #928e85 !important;
+}
+.dark .text-stone-550 {
+  color: #bfaea2 !important;
+}
+.dark .bg-stone-100 {
+  background-color: #272522 !important;
+}
+.dark .border-stone-100,
+.dark .border-stone-200,
+.dark .border-stone-200\/40,
+.dark .border-stone-150\/50,
+.dark .border-amber-950\/10,
+.dark .border-amber-950\/12 {
+  border-color: #2e2c28 !important;
+}
+.dark .bg-stone-50\/45,
+.dark .bg-stone-50\/30,
+.dark .bg-stone-50 {
+  background-color: #22201e !important;
+}
+.dark .text-amber-950 {
+  color: #fdecb2 !important;
+}
+.dark .bg-amber-50\/50 {
+  background-color: rgb(61 23 5 / 50%) !important;
+}
+.dark .text-amber-800 {
+  color: #fdecb2 !important;
+}
+.dark .divide-stone-100 > * + * {
+  border-color: #2e2c28 !important;
+}
+.dark input[type="range"]::-webkit-slider-thumb {
+  background: #fdecb1;
+  border-color: #1c1a18;
+}
+.dark input[type="range"]::-moz-range-thumb {
+  background: #fdecb1;
+  border-color: #1c1a18;
+}
+
+/* Elegant minimalist transitions and subtle fade-ins */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleInSimple {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleInSimple 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Smooth visual enhancements for interactive cards */
+.interactive-card {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.interactive-card:hover {
+  transform: translateY(-2px) scale(1.005);
+}
+.interactive-card:active {
+  transform: translateY(0) scale(0.995);
+}
+
+
+
