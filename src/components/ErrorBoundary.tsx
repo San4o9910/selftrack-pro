@@ -28,8 +28,13 @@ interface State {
 }
 
 export class ErrorBoundary extends React.Component<Props, State> {
-    declare props: Props;
+  // This project ships without @types/react, so the React.Component base
+  // resolves to `any` and its inherited members are invisible to tsc. Declare
+  // the two we use so `npm run lint` stays clean. `declare` emits nothing —
+  // React provides these at runtime.
+  declare props: Props;
   declare setState: (state: Partial<State>) => void;
+
   state: State = { hasError: false, error: null };
 
   static getDerivedStateFromError(error: Error): State {

@@ -359,6 +359,17 @@ export default function App() {
     });
   };
 
+  const setMoodNote = (note: string) => {
+    const todayYmd = today();
+    setMetrics(prev => {
+      const exists = prev.find(m => m.date === todayYmd);
+      if (exists) {
+        return prev.map(m => m.date === todayYmd ? { ...m, notes: note } : m);
+      }
+      return [{ date: todayYmd, notes: note }, ...prev];
+    });
+  };
+
   const handleSaveWeight = (w: number) => {
     const todayYmd = today();
     setMetrics(prev => {
@@ -659,10 +670,12 @@ export default function App() {
                       expenses={expenses}
                       onOpenExpAdd={() => setModal({ type: 'expAdd' })}
                       metric={todayMetric}
+                      allMetrics={metrics}
                       onAddWater={addWater}
                       onUpdateSleepTimes={updateSleepTimes}
                       onUpdateSleepHours={updateSleepHours}
                       onSetMood={setMood}
+                      onSetMoodNote={setMoodNote}
                       language={appLanguage}
                     />
                   )}

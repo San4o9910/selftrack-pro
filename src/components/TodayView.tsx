@@ -8,6 +8,8 @@ import { Check, Plus, Droplet, Moon, Heart, Trash2, Wallet, Info, X } from 'luci
 import { DayEvent, Expense, Metric, Habit } from '../types';
 import { rub, WEEKDAYS, MONTHS_GENITIVE } from '../utils';
 import { getTranslation } from '../lib/translations';
+import { ProgressRing } from './ProgressRing';
+import { computeWellbeingStreak, computeInsights } from '../lib/wellbeing';
 
 interface TodayViewProps {
   events: DayEvent[];
@@ -17,10 +19,12 @@ interface TodayViewProps {
   expenses: Expense[];
   onOpenExpAdd: () => void;
   metric: Metric;
+  allMetrics: Metric[];
   onAddWater: (ml: number) => void;
   onUpdateSleepTimes: (bed: string, wake: string) => void;
   onUpdateSleepHours: (hours: number) => void;
   onSetMood: (mood: 'awful' | 'bad' | 'neutral' | 'good' | 'great') => void;
+  onSetMoodNote: (note: string) => void;
   language?: string;
 }
 
@@ -32,10 +36,12 @@ export default function TodayView({
   expenses,
   onOpenExpAdd,
   metric,
+  allMetrics,
   onAddWater,
   onUpdateSleepTimes,
   onUpdateSleepHours,
   onSetMood,
+  onSetMoodNote,
   language = 'ru'
 }: TodayViewProps) {
   const tToday = (key: string) => getTranslation(key, language);
@@ -62,11 +68,20 @@ export default function TodayView({
   const bed = metric.bed || '';
   const wake = metric.wake || '';
 
+  // Derived well-being summary (streak + neutral insights)
+  const wbStreak = computeWellbeingStreak(allMetrics);
+  const insights = computeInsights(allMetrics, language);
+
   // Local state for Sleep inputs and card collapses
   const [localBed, setLocalBed] = useState(bed || '23:00');
   const [localWake, setLocalWake] = useState(wake || '07:00');
   const [sleepCollapsed, setSleepCollapsed] = useState(sleep !== null);
   const [editingMood, setEditingMood] = useState(false);
+
+  // Local state for the optional mood note
+  const [moodNote, setMoodNote] = useState(metric.notes || '');
+  const [noteOpen, setNoteOpen] = useState(false);
+  useEffect(() => { setMoodNote(metric.notes || ''); }, [metric.notes]);
 
   useEffect(() => {
     if (bed) setLocalBed(bed);
@@ -292,31 +307,51 @@ export default function TodayView({
 
       {/* Well-being Panel */}
       <div className="bg-white border border-amber-950/10 rounded-2xl p-4 shadow-sm space-y-3">
-        <span className="text-[9px] font-black tracking-widest text-stone-400 uppercase">
-          {language === 'en' ? 'WELL-BEING TODAY' : 'Самочувствие сегодня'}
-        </span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[9px] font-black tracking-widest text-stone-400 uppercase">
+            {language === 'en' ? 'WELL-BEING TODAY' : 'Самочувствие сегодня'}
+          </span>
+          {wbStreak > 0 && (
+            <span className="flex items-center gap-1 text-[10px] font-black text-amber-700 bg-amber-50 border border-amber-100 rounded-full px-2 py-0.5">
+              🔥 {wbStreak} {language === 'en' ? (wbStreak === 1 ? 'day' : 'days') : 'дн.'}
+            </span>
+          )}
+        </div>
+
+        {insights.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            {insights.map((ins, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 text-[11px] font-bold text-stone-600 bg-stone-50 border border-stone-100 rounded-xl px-2.5 py-1.5"
+              >
+                <span className="text-sm leading-none">{ins.emoji}</span>
+                <span>{ins.text}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="grid gap-3 sm:grid-cols-3">
           {/* Water card */}
-          <div className="bg-stone-50 border border-stone-100 rounded-2xl p-3.5 flex flex-col justify-between">
-            <div className="flex items-center justify-between gap-1 mb-2">
+          <div className="bg-stone-50 border border-stone-100 rounded-2xl p-3.5 flex flex-col items-center justify-between">
+            <div className="w-full flex items-center justify-between gap-1 mb-2">
               <span className="text-xs font-black text-slate-700 flex items-center gap-1.5">
                 <Droplet className="w-3.5 h-3.5 text-blue-500 fill-blue-500" />
                 {tToday('unitWater')}
               </span>
-              <span className="text-xs font-black text-blue-600 font-mono">
-                {water}/2000
-              </span>
-            </div>
-            
-            <div className="h-2 bg-blue-100 border border-blue-200 rounded-full overflow-hidden mb-3">
-              <div
-                className="h-full bg-blue-500 transition-all duration-300"
-                style={{ width: `${Math.min((water / 2000) * 100, 100)}%` }}
-              ></div>
             </div>
 
-            <div className="flex gap-2">
+            <ProgressRing value={water} goal={2000} color="#3b82f6">
+              <span className="text-lg font-black text-blue-600 font-mono leading-none">
+                {Math.round(Math.min((water / 2000) * 100, 100))}%
+              </span>
+              <span className="text-[9px] font-bold text-stone-400 font-mono mt-1">
+                {water}/2000 {language === 'en' ? 'ml' : 'мл'}
+              </span>
+            </ProgressRing>
+
+            <div className="flex gap-2 w-full mt-3">
               <button
                 onClick={() => onAddWater(250)}
                 className="flex-1 text-[11px] font-extrabold bg-blue-50 text-blue-600 border border-blue-100 rounded-xl py-1 px-2 hover:bg-blue-100 active:scale-95 transition-all text-center"
@@ -489,6 +524,35 @@ export default function TodayView({
             )}
           </div>
         </div>
+
+        {/* Optional note about the day — shown once a mood is logged */}
+        {metric.mood && (
+          <div className="pt-1">
+            {!noteOpen && !moodNote ? (
+              <button
+                type="button"
+                onClick={() => setNoteOpen(true)}
+                className="w-full text-[11px] font-bold text-stone-500 hover:text-amber-800 bg-stone-50 hover:bg-amber-50 border border-dashed border-stone-200 rounded-xl py-2 transition-all active:scale-98"
+              >
+                + {language === 'en' ? 'Add a note about today' : 'Добавить заметку о дне'}
+              </button>
+            ) : (
+              <div className="space-y-1.5">
+                <label className="text-[8px] font-black tracking-widest text-stone-400 uppercase">
+                  {language === 'en' ? 'Note' : 'Заметка'}
+                </label>
+                <textarea
+                  value={moodNote}
+                  onChange={(e) => setMoodNote(e.target.value)}
+                  onBlur={() => onSetMoodNote(moodNote.trim())}
+                  rows={2}
+                  placeholder={language === 'en' ? 'What happened today?' : 'Что было сегодня?'}
+                  className="w-full resize-none border border-stone-200 bg-stone-50 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:border-amber-950 focus:outline-none"
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

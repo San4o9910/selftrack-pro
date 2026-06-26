@@ -32,6 +32,7 @@ export interface Metric {
   sleep?: number;
   bed?: string; // 'HH:MM'
   wake?: string; // 'HH:MM'
+  notes?: string; // optional free-text note about the day
 }
 
 export interface Expense {
