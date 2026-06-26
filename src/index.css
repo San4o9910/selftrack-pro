@@ -141,6 +141,118 @@ html.dark body {
   border-color: #1c1a18;
 }
 
+/* ===================================================================
+   Dark-mode contrast pass.
+   The theme darkens neutral surfaces but left many text/background
+   utilities untouched, so a lot of text rendered dark-on-dark (and
+   colored badges stayed light, which would clash once text is lightened).
+   This block makes text readable EVERYWHERE by doing both sides together:
+   (1) lighten dark neutral + colored text, (2) darken light colored
+   badge backgrounds (incl. their /opacity variants) so light colored
+   text reads on them too. Solid colored buttons (bg-*-500/600) and
+   text-white are intentionally left alone.
+   =================================================================== */
+
+/* --- Neutral text --- */
+.dark .text-stone-900,
+.dark .text-stone-800 { color: #f1efea !important; }
+.dark .text-stone-700 { color: #ddd8d0 !important; }
+.dark .text-stone-600 { color: #c2bcb3 !important; }
+.dark .text-stone-500 { color: #a39d94 !important; }
+.dark .text-slate-900 { color: #eef1f6 !important; }
+.dark .text-slate-700 { color: #ccd2dd !important; }
+.dark .text-slate-600 { color: #b3bccb !important; }
+.dark .text-slate-500 { color: #99a3b5 !important; }
+
+/* --- Colored text (readable tints; work on dark cards and dark badges) --- */
+.dark .text-amber-600,
+.dark .text-amber-700,
+.dark .text-amber-900 { color: #f3cf7a !important; }
+.dark .text-emerald-600,
+.dark .text-emerald-700,
+.dark .text-emerald-800,
+.dark .text-emerald-900 { color: #6ee7b7 !important; }
+.dark .text-green-600,
+.dark .text-green-700,
+.dark .text-green-800 { color: #86efac !important; }
+.dark .text-blue-600,
+.dark .text-blue-700,
+.dark .text-blue-800,
+.dark .text-blue-900 { color: #93c5fd !important; }
+.dark .text-sky-600,
+.dark .text-sky-700 { color: #7dd3fc !important; }
+.dark .text-indigo-600,
+.dark .text-indigo-700,
+.dark .text-indigo-800,
+.dark .text-indigo-900 { color: #a5b4fc !important; }
+.dark .text-red-600,
+.dark .text-red-700,
+.dark .text-red-800 { color: #fca5a5 !important; }
+.dark .text-rose-600,
+.dark .text-rose-700,
+.dark .text-rose-800 { color: #fda4af !important; }
+.dark .text-teal-600,
+.dark .text-teal-700 { color: #5eead4 !important; }
+.dark .text-orange-600,
+.dark .text-orange-700 { color: #fdba74 !important; }
+
+/* --- Remaining mid/dark text shades (500-level + custom darks) --- */
+.dark .text-amber-500,
+.dark .text-amber-850 { color: #f3cf7a !important; }
+.dark .text-emerald-500,
+.dark .text-emerald-850 { color: #6ee7b7 !important; }
+.dark .text-blue-500 { color: #93c5fd !important; }
+.dark .text-indigo-500,
+.dark .text-indigo-850,
+.dark .text-indigo-950 { color: #a5b4fc !important; }
+.dark .text-red-500,
+.dark .text-red-950 { color: #fca5a5 !important; }
+.dark .text-rose-500 { color: #fda4af !important; }
+.dark .text-slate-550 { color: #9aa4b5 !important; }
+.dark .text-stone-450 { color: #aaa49b !important; }
+
+/* --- Light colored badge backgrounds -> dark tints (incl. opacity variants) --- */
+.dark .bg-amber-50,
+.dark .bg-amber-50\/20,
+.dark .bg-amber-50\/25,
+.dark .bg-amber-50\/50,
+.dark .bg-amber-50\/60,
+.dark .bg-amber-100,
+.dark .bg-amber-100\/60,
+.dark .bg-amber-100\/70,
+.dark .bg-amber-100\/80,
+.dark .bg-amber-200 { background-color: #2a1e08 !important; }
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/60,
+.dark .bg-emerald-100,
+.dark .bg-emerald-100\/70 { background-color: #0c2a20 !important; }
+.dark .bg-blue-50,
+.dark .bg-blue-100 { background-color: #122339 !important; }
+.dark .bg-indigo-50,
+.dark .bg-indigo-50\/20,
+.dark .bg-indigo-100 { background-color: #1b1b42 !important; }
+.dark .bg-red-50,
+.dark .bg-red-50\/20,
+.dark .bg-red-100 { background-color: #2c1414 !important; }
+.dark .bg-rose-50,
+.dark .bg-rose-50\/60,
+.dark .bg-rose-100,
+.dark .bg-rose-100\/70 { background-color: #2c1320 !important; }
+.dark .bg-teal-50 { background-color: #0c2422 !important; }
+.dark .bg-orange-50 { background-color: #2c1a0a !important; }
+.dark .bg-stone-200 { background-color: #2e2c28 !important; }
+
+/* Colored badge borders -> subtle dark tints so edges aren't bright lines */
+.dark .border-amber-100,
+.dark .border-amber-200,
+.dark .border-blue-100,
+.dark .border-blue-200,
+.dark .border-emerald-100,
+.dark .border-emerald-200,
+.dark .border-red-100,
+.dark .border-rose-100,
+.dark .border-indigo-100 { border-color: rgba(255,255,255,0.08) !important; }
+
 /* Elegant minimalist transitions and subtle fade-ins */
 @keyframes fadeIn {
   from {
@@ -195,6 +307,3 @@ html.dark body {
 .interactive-card:active {
   transform: translateY(0) scale(0.995);
 }
-
-
-
